@@ -1,0 +1,13 @@
+<html>
+<head>
+</head>
+<body>
+  <h1>Hi There</h1>
+  <div id="root"></div>
+  <script>
+    window.addEventListener("message", ({ data }) => {
+      eval(data);
+    }, false);
+  </script>
+</body>
+</html>

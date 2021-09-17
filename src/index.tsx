@@ -4,10 +4,25 @@ import * as esbuild from "esbuild-wasm";
 import { unpkgPathPlugin } from "./plugins/unpkg-path-plugins";
 import { fetchPlugin } from "./plugins/fetch-plugin";
 
+const html = `
+    <html>
+<head>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    window.addEventListener("message", ({ data }) => {
+      eval(data);
+    }, false);
+  </script>
+</body>
+</html>
+  `;
+
 const App: React.FC = () => {
-  const [code, setCode] = useState("");
   const [input, setInput] = useState("");
   const esbuildRef = useRef<esbuild.Service | undefined>();
+  const iframeRef = useRef<any>();
 
   const startService = async () => {
     const service = await esbuild.startService({
@@ -34,7 +49,10 @@ const App: React.FC = () => {
       },
     });
 
-    setCode(content.outputFiles[0].text);
+    iframeRef.current?.contentWindow?.postMessage(
+      content.outputFiles[0].text,
+      "*"
+    );
   };
 
   useEffect(() => {
@@ -49,7 +67,13 @@ const App: React.FC = () => {
       <div>
         <button onClick={onSubmit}>Submit</button>
       </div>
-      <pre>{code}</pre>
+      <iframe
+        ref={iframeRef}
+        srcDoc={html}
+        sandbox="allow-scripts"
+        title="js sandbox"
+        name="js-sandbox"
+      ></iframe>
     </div>
   );
 };
