@@ -10,14 +10,10 @@ export const fetchPlugin = (inputCode: string) => {
   return {
     name: "fetch-plugin",
     setup(build: esbuild.PluginBuild) {
-      build.onLoad({ filter: /(^index\.js$)/ }, () => {
-        return {
-          loader: "jsx",
-          contents: inputCode,
-        };
-      });
-
-      build.onLoad({ filter: /\.css$/ }, async (args: any) => {
+      /**
+       * Cache Middlewere
+       */
+      build.onLoad({ filter: /.*/ }, async (args: any) => {
         const cachedResult = await fileCache.getItem<esbuild.OnLoadResult>(
           args.path
         );
@@ -25,6 +21,23 @@ export const fetchPlugin = (inputCode: string) => {
         if (cachedResult) {
           return cachedResult;
         }
+        return null;
+      });
+
+      /**
+       * Entry point loader
+       */
+      build.onLoad({ filter: /(^index\.js$)/ }, () => {
+        return {
+          loader: "jsx",
+          contents: inputCode,
+        };
+      });
+
+      /**
+       * CSS Loader - using a JS wrapper to bundle and load the CSS into the DOM.
+       */
+      build.onLoad({ filter: /\.css$/ }, async (args: any) => {
         const { data, request } = await axios.get(args.path);
 
         const contents = `
@@ -43,14 +56,10 @@ export const fetchPlugin = (inputCode: string) => {
         return result;
       });
 
+      /**
+       * JSX Loader
+       */
       build.onLoad({ filter: /.*/ }, async (args: any) => {
-        const cachedResult = await fileCache.getItem<esbuild.OnLoadResult>(
-          args.path
-        );
-
-        if (cachedResult) {
-          return cachedResult;
-        }
         const { data, request } = await axios.get(args.path);
 
         const result: esbuild.OnLoadResult = {
