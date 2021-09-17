@@ -11,8 +11,18 @@ const html = `
 <body>
   <div id="root"></div>
   <script>
+    const rootElement = document.getElementById('root');
+
     window.addEventListener("message", ({ data }) => {
-      eval(data);
+     try {
+       rootElement.innerHTML = "";
+       eval(data);
+     } catch (error) {
+
+       rootElement.innerHTML = '<div style="color: red;"> <h4>Runtime Error</h4>' + error + '</div>';
+       console.error(error);
+
+     }
     }, false);
   </script>
 </body>
@@ -38,6 +48,8 @@ const App: React.FC = () => {
       return;
     }
 
+    iframeRef.current.srcdoc = html;
+
     const content = await esbuildRef.current.build({
       entryPoints: ["index.js"],
       bundle: true,
@@ -49,7 +61,7 @@ const App: React.FC = () => {
       },
     });
 
-    iframeRef.current?.contentWindow?.postMessage(
+    iframeRef.current.contentWindow.postMessage(
       content.outputFiles[0].text,
       "*"
     );
