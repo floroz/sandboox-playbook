@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import * as esbuild from "esbuild-wasm";
 import { unpkgPathPlugin } from "./plugins/unpkg-path-plugins";
 import { fetchPlugin } from "./plugins/fetch-plugin";
+import CodeEditor from "./components/code-editor";
 
 const html = `
     <html>
@@ -30,7 +31,7 @@ const html = `
   `;
 
 const App: React.FC = () => {
-  const [input, setInput] = useState("");
+  const [code, setCode] = useState("");
   const esbuildRef = useRef<esbuild.Service | undefined>();
   const iframeRef = useRef<any>();
 
@@ -41,6 +42,10 @@ const App: React.FC = () => {
     });
 
     return service;
+  };
+
+  const onEditorChange = (code: string) => {
+    setCode(code);
   };
 
   const onSubmit = async () => {
@@ -54,7 +59,7 @@ const App: React.FC = () => {
       entryPoints: ["index.js"],
       bundle: true,
       write: false,
-      plugins: [unpkgPathPlugin(), fetchPlugin(input)],
+      plugins: [unpkgPathPlugin(), fetchPlugin(code)],
       define: {
         "process.env.NODE_ENV": "'production'",
         global: "window",
@@ -75,7 +80,7 @@ const App: React.FC = () => {
 
   return (
     <div>
-      <textarea value={input} onChange={(e) => setInput(e.target.value)} />
+      <CodeEditor onChange={onEditorChange} />
       <div>
         <button onClick={onSubmit}>Submit</button>
       </div>
