@@ -4,6 +4,7 @@ import * as esbuild from "esbuild-wasm";
 import { unpkgPathPlugin } from "./plugins/unpkg-path-plugins";
 import { fetchPlugin } from "./plugins/fetch-plugin";
 import CodeEditor from "./components/code-editor";
+import "bulmaswatch/superhero/bulmaswatch.min.css";
 
 const html = `
     <html>
