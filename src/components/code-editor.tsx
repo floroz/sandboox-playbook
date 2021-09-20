@@ -75,7 +75,7 @@ const CodeEditor = ({
         Format
       </button>
       <MonacoEditor
-        height={400}
+        height="100%"
         language="javascript"
         theme="dark"
         options={{

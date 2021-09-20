@@ -1,0 +1,20 @@
+.iframe-wrapper {
+  height: 100%;
+  position: relative;
+}
+
+.iframe-wrapper .iframe-backdrop {
+  display: none;
+}
+
+.iframe-wrapper.is-iframe-resizing > .iframe-backdrop {
+  display: block;
+  position: absolute;
+  inset: 0 0 0 0;
+  z-index: 10;
+}
+
+.iframe-wrapper > .iframe {
+  background-color: white;
+  height: 100%;
+}
