@@ -9,14 +9,16 @@ import "./code-cell.css";
 
 const CodeCell: React.FC = () => {
   const [code, setCode] = useState("");
+  const [error, setError] = useState("");
 
   const { bundle } = useESBuild();
 
   const debouncedBundle = debounce(async (codeInput: string) => {
-    const builtCode = await bundle(codeInput);
-    if (!builtCode) return;
+    const output = await bundle(codeInput);
+    if (!output) return;
 
-    setCode(builtCode);
+    setCode(output.code);
+    setError(output.error);
   }, 1000);
 
   const onEditorChange = (userInput: string) => {
@@ -29,7 +31,7 @@ const CodeCell: React.FC = () => {
         <Resizable axis="x">
           <CodeEditor onChange={onEditorChange} />
         </Resizable>
-        <Preview code={code} />
+        <Preview code={code} error={error} />
       </div>
     </Resizable>
   );

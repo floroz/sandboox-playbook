@@ -3,9 +3,10 @@ import "./preview.css";
 
 interface Props {
   code: string;
+  error: string;
 }
 
-const Preview = ({ code }: Props) => {
+const Preview = ({ code, error }: Props) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
@@ -20,6 +21,8 @@ const Preview = ({ code }: Props) => {
     iframeRef.current.contentWindow!.postMessage(code, "*");
   }, [code]);
 
+  console.log("error!", error);
+
   return (
     <div className="preview-wrapper">
       <iframe
@@ -29,6 +32,11 @@ const Preview = ({ code }: Props) => {
         sandbox="allow-scripts"
         title="js_sandbox"
       />
+      {error && (
+        <div className="preview-error">
+          <p>{error}</p>
+        </div>
+      )}
     </div>
   );
 };
@@ -48,18 +56,24 @@ const html = `
     <div id="root"></div>
     <script>
       const rootElement = document.getElementById('root');
+      const handleError = (error) => {
+        rootElement.innerHTML = '<div style="color: red;"> <h4>Runtime Error</h4>' + error + '</div>';
+          console.error(error);
+      }
 
       window.addEventListener("message", ({ data }) => {
-      try {
-        rootElement.innerHTML = "";
-        eval(data);
-      } catch (error) {
-
-        rootElement.innerHTML = '<div style="color: red;"> <h4>Runtime Error</h4>' + error + '</div>';
-        console.error(error);
-
-      }
+        try {
+          rootElement.innerHTML = "";
+          eval(data);
+        } catch (error) {
+          handleError(error)
+        }
       }, false);
+
+      window.addEventListener('error', (event) => {
+        event.preventDefault();
+        handleError(event.error)
+      })
     </script>
   </body>
 </html>

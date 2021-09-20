@@ -19,18 +19,29 @@ export const useESBuild = () => {
     if (!esbuildRef.current) {
       return;
     }
-    const content = await esbuildRef.current.build({
-      entryPoints: ["index.js"],
-      bundle: true,
-      write: false,
-      plugins: [unpkgPathPlugin(), fetchPlugin(code)],
-      define: {
-        "process.env.NODE_ENV": "'production'",
-        global: "window",
-      },
-    });
 
-    return content.outputFiles[0].text;
+    try {
+      const content = await esbuildRef.current.build({
+        entryPoints: ["index.js"],
+        bundle: true,
+        write: false,
+        plugins: [unpkgPathPlugin(), fetchPlugin(code)],
+        define: {
+          "process.env.NODE_ENV": "'production'",
+          global: "window",
+        },
+      });
+
+      return {
+        code: content.outputFiles[0].text,
+        error: "",
+      };
+    } catch (error) {
+      return {
+        code: "",
+        error: (error as any).message,
+      };
+    }
   }, []);
 
   useEffect(() => {
