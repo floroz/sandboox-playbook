@@ -1,20 +1,20 @@
-.iframe-wrapper {
+.preview-wrapper {
   height: 100%;
+  flex-grow: 1;
   position: relative;
+  /* overflow: hidden; */
 }
 
-.iframe-wrapper .iframe-backdrop {
-  display: none;
-}
-
-.iframe-wrapper.is-iframe-resizing > .iframe-backdrop {
+.react-draggable-transparent-selection .preview-wrapper::after {
+  content: "";
   display: block;
   position: absolute;
   inset: 0 0 0 0;
   z-index: 10;
+  opacity: 0;
 }
 
-.iframe-wrapper > .iframe {
-  background-color: white;
+.preview-wrapper > .iframe {
   height: 100%;
+  width: 100%;
 }

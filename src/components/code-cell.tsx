@@ -10,8 +10,6 @@ import "./code-cell.css";
 const CodeCell: React.FC = () => {
   const [code, setCode] = useState("");
 
-  const [isResizing, setIsResizing] = useState(false);
-
   const { bundle } = useESBuild();
 
   const debouncedBuildCode = debounce(async (codeInput: string) => {
@@ -25,24 +23,13 @@ const CodeCell: React.FC = () => {
     debouncedBuildCode(userInput);
   };
 
-  const onResizeStart = () => {
-    if (isResizing) return;
-    setIsResizing(true);
-  };
-  const onResizeStop = () => {
-    if (!isResizing) return;
-    setIsResizing(false);
-  };
-
   return (
-    <Resizable
-      axis="y"
-      onResizeStart={onResizeStart}
-      onResizeStop={onResizeStop}
-    >
+    <Resizable axis="y">
       <div className="code-cell">
-        <CodeEditor onChange={onEditorChange} />
-        <Preview code={code} isResizing={isResizing} />
+        <Resizable axis="x">
+          <CodeEditor onChange={onEditorChange} />
+        </Resizable>
+        <Preview code={code} />
       </div>
     </Resizable>
   );

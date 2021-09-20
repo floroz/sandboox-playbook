@@ -3,28 +3,27 @@ import "./preview.css";
 
 interface Props {
   code: string;
-  isResizing: boolean;
 }
 
-const Preview = ({ code, isResizing }: Props) => {
-  const iframeRef = useRef<any>();
+const Preview = ({ code }: Props) => {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
+    if (!iframeRef.current) return;
+
     iframeRef.current.srcdoc = html;
 
-    iframeRef.current.contentWindow.postMessage(code, "*");
+    iframeRef.current.contentWindow!.postMessage(code, "*");
   }, [code]);
 
   return (
-    <div className={`iframe-wrapper ${isResizing ? "is-iframe-resizing" : ""}`}>
-      <div className="iframe-backdrop" />
+    <div className="preview-wrapper">
       <iframe
         className="iframe"
         srcDoc={html}
         ref={iframeRef}
         sandbox="allow-scripts"
         title="js_sandbox"
-        width={300}
       />
     </div>
   );
@@ -34,7 +33,13 @@ export default Preview;
 
 const html = `
 <html>
-  <head></head>
+  <head>
+    <style>
+    html {
+      background-color: white;
+    }
+    </style>
+  </head>
   <body>
     <div id="root"></div>
     <script>
