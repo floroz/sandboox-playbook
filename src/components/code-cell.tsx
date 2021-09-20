@@ -12,15 +12,15 @@ const CodeCell: React.FC = () => {
 
   const { bundle } = useESBuild();
 
-  const debouncedBuildCode = debounce(async (codeInput: string) => {
+  const debouncedBundle = debounce(async (codeInput: string) => {
     const builtCode = await bundle(codeInput);
     if (!builtCode) return;
 
     setCode(builtCode);
-  }, 1500);
+  }, 1000);
 
   const onEditorChange = (userInput: string) => {
-    debouncedBuildCode(userInput);
+    debouncedBundle(userInput);
   };
 
   return (

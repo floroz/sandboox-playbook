@@ -12,6 +12,10 @@ const Preview = ({ code }: Props) => {
     if (!iframeRef.current) return;
 
     iframeRef.current.srcdoc = html;
+  }, []);
+
+  useEffect(() => {
+    if (!iframeRef.current) return;
 
     iframeRef.current.contentWindow!.postMessage(code, "*");
   }, [code]);
