@@ -50,7 +50,7 @@ const Resizable: React.FC<Props> = ({ axis, children }) => {
     return () => {
       window.removeEventListener("resize", onResize);
     };
-  }, [width, windowWidth]);
+  }, [width]);
 
   return (
     <ResizableBox axis={axis} {...options}>
