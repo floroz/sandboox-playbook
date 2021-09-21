@@ -4,7 +4,7 @@ import { bundlesReducer } from "./bundlesReducer";
 
 export const rootReducer = combineReducers({
   cells: cellsReducer,
-  // bundles: bundlesReducer,
+  bundles: bundlesReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

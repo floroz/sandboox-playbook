@@ -3,7 +3,7 @@ import { Action } from "../actions";
 import { Cell, CellMoveDirection, CellType } from "../cell";
 import produce from "immer";
 import { v4 as uuidv4 } from "uuid";
-interface CellState {
+export interface CellState {
   data: {
     [key: Cell["id"]]: Cell;
   };
