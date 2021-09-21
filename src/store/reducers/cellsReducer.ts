@@ -1,8 +1,8 @@
 import { ActionType } from "../action-types";
 import { Action } from "../actions";
-import { Cell, CellMoveDirection } from "../cell";
+import { Cell, CellMoveDirection, CellType } from "../cell";
 import produce from "immer";
-
+import { v4 as uuidv4 } from "uuid";
 interface CellState {
   data: {
     [key: Cell["id"]]: Cell;
@@ -19,35 +19,37 @@ const defaultState: CellState = {
   order: [],
 };
 
+const swapCellOrder = (
+  firstIndex: number,
+  secondIndex: number,
+  order: Cell["id"][]
+): Cell["id"][] => {
+  const temp = order[firstIndex];
+
+  order[firstIndex] = order[secondIndex];
+  order[secondIndex] = temp;
+
+  return order;
+};
+
 const moveCell = (
   id: Cell["id"],
   direction: CellMoveDirection,
   state: CellState
-) => {
+): CellState => {
   let lastIndex = state.order.length - 1;
-  let currentIndex = state.order.findIndex((item) => item === id);
+  let index = state.order.findIndex((item) => item === id);
 
-  if (direction === "down") {
-    if (currentIndex === lastIndex) {
-      // item is already last, cannot be moved further
-      return state;
-    }
+  const indexToSwap = direction === "up" ? index - 1 : index + 1;
 
-    let nextId = state.order[currentIndex + 1];
+  const isOutOfBoundary =
+    // we cannot move the last item forward
+    // we cannot move the first time back and
+    indexToSwap < 0 || indexToSwap > lastIndex;
 
-    state.order[currentIndex] = nextId;
-    state.order[currentIndex + 1] = id;
-  } else {
-    if (currentIndex === 0) {
-      // item is already first, cannot be moved before
-      return state;
-    }
+  if (index === -1 || isOutOfBoundary) return state;
 
-    let previousId = state.order[currentIndex - 1];
-
-    state.order[currentIndex] = previousId;
-    state.order[currentIndex - 1] = id;
-  }
+  state.order = swapCellOrder(index, indexToSwap, state.order);
 
   return state;
 };
@@ -55,9 +57,7 @@ const moveCell = (
 const deleteCell = (id: Cell["id"], state: CellState) => {
   delete state.data[id];
 
-  const orderIndex = state.order.findIndex((cellId) => cellId === id);
-
-  state.order.slice(orderIndex, 1);
+  state.order = state.order.filter((cellId) => cellId !== id);
 
   return state;
 };
@@ -67,11 +67,31 @@ const updateCell = (
   content: Cell["content"],
   state: CellState
 ) => {
-  if (!state.data[id]) {
-    return state;
-  }
+  if (state.data[id]) state.data[id].content = content;
 
-  state.data[id].content = content;
+  return state;
+};
+
+const insertCellBefore = (
+  id: Cell["id"] | null,
+  type: CellType,
+  state: CellState
+) => {
+  const cell: Cell = {
+    type,
+    content: "",
+    id: uuidv4(),
+  };
+
+  state.data[cell.id] = cell;
+
+  const index = state.order.findIndex((i) => i === id);
+
+  if (index < 0) {
+    state.order.push(cell.id);
+  } else {
+    state.order.splice(index, 0, cell.id);
+  }
 
   return state;
 };
@@ -84,7 +104,7 @@ export const cellsReducer = produce(
       case ActionType.DELETE_CELL:
         return deleteCell(action.payload.id, state);
       case ActionType.INSERT_CELL_BEFORE:
-        return state;
+        return insertCellBefore(action.payload.id, action.payload.type, state);
       case ActionType.UPDATE_CELL:
         return updateCell(action.payload.id, action.payload.content, state);
       default:
