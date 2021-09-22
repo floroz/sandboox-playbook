@@ -8,17 +8,12 @@ import "./syntax.css";
 import codeShift from "jscodeshift";
 import Highlighter from "monaco-jsx-highlighter";
 
-const defaultInitialValue = `const message = 'Hello World!'\n\nconsole.log(message)`;
-
 type CodeEditorProps = {
   initialValue?: string;
   onChange: (value: string) => void;
 };
 
-const CodeEditor = ({
-  initialValue = defaultInitialValue,
-  onChange,
-}: CodeEditorProps) => {
+const CodeEditor = ({ initialValue, onChange }: CodeEditorProps) => {
   const codeEditorRef = useRef<editor.IStandaloneCodeEditor>();
 
   const onEditorDidMount: EditorDidMount = (getEditorValue, monacoEditor) => {

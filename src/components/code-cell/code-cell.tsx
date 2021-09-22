@@ -1,15 +1,23 @@
 import React, { useState } from "react";
-import CodeEditor from "./code-editor";
+import CodeEditor from "../code-editor/code-editor";
 import "bulmaswatch/superhero/bulmaswatch.min.css";
-import Preview from "./preview";
-import { useESBuild } from "../hooks/bundler/useESBuild";
+import Preview from "../preview/preview";
+import { useESBuild } from "../../hooks/useESBuild";
 import debounce from "lodash/debounce";
-import Resizable from "./resizable";
+import Resizable from "../resizable/resizable";
 import "./code-cell.css";
+import { useAction } from "../../hooks/useAction";
+import { useTypedSelector } from "../../hooks/useTypedSelector";
 
-const CodeCell: React.FC = () => {
+type Props = { id: string };
+
+const CodeCell: React.FC<Props> = ({ id }) => {
+  const { content } = useTypedSelector((state) => state.cells.data[id]);
+
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
+
+  const { updateCell } = useAction();
 
   const { bundle } = useESBuild();
 
@@ -22,6 +30,7 @@ const CodeCell: React.FC = () => {
   }, 1000);
 
   const onEditorChange = (userInput: string) => {
+    updateCell(id, userInput);
     debouncedBundle(userInput);
   };
 
@@ -29,7 +38,7 @@ const CodeCell: React.FC = () => {
     <Resizable axis="y">
       <div className="code-cell">
         <Resizable axis="x">
-          <CodeEditor onChange={onEditorChange} />
+          <CodeEditor onChange={onEditorChange} initialValue={content} />
         </Resizable>
         <Preview code={code} error={error} />
       </div>

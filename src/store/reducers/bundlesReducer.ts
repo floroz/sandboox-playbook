@@ -2,4 +2,6 @@ import produce from "immer";
 
 type DefaultState = {};
 
-export const bundlesReducer = produce(() => {});
+export const bundlesReducer = produce(() => {
+  return {};
+});

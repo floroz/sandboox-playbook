@@ -1,28 +1,23 @@
 import MDEditor from "@uiw/react-md-editor";
 import React, { useEffect, useRef, useState } from "react";
+import { useAction } from "../../hooks/useAction";
+import { useTypedSelector } from "../../hooks/useTypedSelector";
 import "./text-editor.css";
 
-const defaultText = `
-  # Header
-  
-  paragraph
+interface Props {
+  id: string;
+}
 
-  ## List
-
-  1. item one
-  2. item two
-`;
-
-interface Props {}
-
-const TextEditor = (props: Props) => {
+const TextEditor = ({ id }: Props) => {
   const [editing, setEditing] = useState(false);
-  const [text, setText] = useState(defaultText);
   const MDEditorRef = useRef<HTMLDivElement>(null);
+
+  const { content } = useTypedSelector((state) => state.cells.data[id]);
 
   const onPreviewClick = (e: React.MouseEvent<HTMLDivElement>) => {
     setEditing(true);
   };
+  const { updateCell } = useAction();
 
   useEffect(() => {
     const onDocumentClick = (event: MouseEvent) => {
@@ -43,10 +38,14 @@ const TextEditor = (props: Props) => {
     };
   }, []);
 
+  const onEditorChange = (event: string | undefined) => {
+    updateCell(id, event ?? "");
+  };
+
   if (editing) {
     return (
       <div ref={MDEditorRef} className="text-editor">
-        <MDEditor onChange={(e) => setText(e ?? "")} value={text} />
+        <MDEditor onChange={onEditorChange} value={content} />
       </div>
     );
   }
@@ -54,7 +53,7 @@ const TextEditor = (props: Props) => {
   return (
     <div onClick={onPreviewClick} className="text-editor card">
       <div className="card-content">
-        <MDEditor.Markdown source={text} />
+        <MDEditor.Markdown source={content} />
       </div>
     </div>
   );

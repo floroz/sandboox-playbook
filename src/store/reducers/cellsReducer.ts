@@ -3,6 +3,10 @@ import { Action } from "../actions";
 import { Cell, CellMoveDirection, CellType } from "../cell";
 import produce from "immer";
 import { v4 as uuidv4 } from "uuid";
+
+const defaultMarkdownContent = `# Header \n Hello World!`;
+
+const initialCodeSnipper = `const a = 1;`;
 export interface CellState {
   data: {
     [key: Cell["id"]]: Cell;
@@ -79,7 +83,7 @@ const insertCellBefore = (
 ) => {
   const cell: Cell = {
     type,
-    content: "",
+    content: type === "text" ? defaultMarkdownContent : initialCodeSnipper,
     id: uuidv4(),
   };
 
