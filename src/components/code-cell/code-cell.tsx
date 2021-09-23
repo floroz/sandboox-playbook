@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import CodeEditor from "../code-editor/code-editor";
 import "bulmaswatch/superhero/bulmaswatch.min.css";
 import Preview from "../preview/preview";
-import { useESBuild } from "../../hooks/useESBuild";
+import { useBundle } from "../../hooks/useBundle";
 import Resizable from "../resizable/resizable";
 import "./code-cell.css";
 import { useAction } from "../../hooks/useAction";
@@ -13,7 +13,7 @@ type Props = { id: string };
 const CodeCell: React.FC<Props> = ({ id }) => {
   const { content } = useTypedSelector((state) => state.cells.data[id]);
 
-  const { code, error, loading: isBundling } = useESBuild(content);
+  const { code, error, isBundling } = useBundle(content);
 
   const { updateCell } = useAction();
 
