@@ -76,7 +76,7 @@ const updateCell = (
   return state;
 };
 
-const insertCellBefore = (
+const insertCellAfter = (
   id: Cell["id"] | null,
   type: CellType,
   state: CellState
@@ -92,9 +92,9 @@ const insertCellBefore = (
   const index = state.order.findIndex((i) => i === id);
 
   if (index < 0) {
-    state.order.push(cell.id);
+    state.order.unshift(cell.id);
   } else {
-    state.order.splice(index, 0, cell.id);
+    state.order.splice(index + 1, 0, cell.id);
   }
 
   return state;
@@ -107,8 +107,8 @@ export const cellsReducer = produce(
         return moveCell(action.payload.id, action.payload.direction, state);
       case ActionType.DELETE_CELL:
         return deleteCell(action.payload.id, state);
-      case ActionType.INSERT_CELL_BEFORE:
-        return insertCellBefore(action.payload.id, action.payload.type, state);
+      case ActionType.INSERT_CELL_AFTER:
+        return insertCellAfter(action.payload.id, action.payload.type, state);
       case ActionType.UPDATE_CELL:
         return updateCell(action.payload.id, action.payload.content, state);
       default:

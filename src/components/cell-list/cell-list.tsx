@@ -10,15 +10,15 @@ const CellList = (props: Props) => {
 
   const renderedCells = cells.map((cell) => (
     <React.Fragment key={cell.id}>
-      <AddCell nextCellId={cell.id} />
       <CellListItem cell={cell} />
+      <AddCell previousCell={cell.id} />
     </React.Fragment>
   ));
 
   return (
     <ul>
+      <AddCell previousCell={null} forceVisible={cells.length === 0} />
       {renderedCells}
-      <AddCell nextCellId={null} forceVisible={cells.length === 0} />
     </ul>
   );
 };

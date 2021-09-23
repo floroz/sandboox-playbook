@@ -3,8 +3,9 @@
   display: flex;
   position: relative;
   justify-content: center;
-  opacity: 0.25;
-  transition: opacity 0.3s;
+  opacity: 0;
+  transition: opacity 0.3s ease 0.1s;
+  margin: 10px 0;
 }
 
 .add-cell:hover {
@@ -19,6 +20,7 @@
   display: flex;
   justify-content: center;
   margin: 0 20px;
+  cursor: pointer;
 }
 
 .add-cell .divider {

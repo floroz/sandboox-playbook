@@ -12,7 +12,7 @@ const initialState: CellState = {
 describe("cellReducer", () => {
   test("should insert a cell", () => {
     const action: Action = {
-      type: ActionType.INSERT_CELL_BEFORE,
+      type: ActionType.INSERT_CELL_AFTER,
       payload: { id: null, type: "code" },
     };
     const { order } = cellsReducer(initialState, action);
@@ -37,7 +37,7 @@ describe("cellReducer", () => {
     };
 
     const action: Action = {
-      type: ActionType.INSERT_CELL_BEFORE,
+      type: ActionType.INSERT_CELL_AFTER,
       payload: { id: cell.id, type: "code" },
     };
 
