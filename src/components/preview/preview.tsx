@@ -21,8 +21,6 @@ const Preview = ({ code, error }: Props) => {
     iframeRef.current.contentWindow!.postMessage(code, "*");
   }, [code]);
 
-  console.log("error!", error);
-
   return (
     <div className="preview-wrapper">
       <iframe

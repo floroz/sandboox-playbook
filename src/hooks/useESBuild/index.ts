@@ -1,10 +1,14 @@
 import * as esbuild from "esbuild-wasm";
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { fetchPlugin } from "./plugins/fetch-plugin";
+import debounce from "lodash/debounce";
 import { unpkgPathPlugin } from "./plugins/unpkg-path-plugins";
 
-export const useESBuild = () => {
+export const useESBuild = (content: string) => {
   const esbuildRef = useRef<esbuild.Service | undefined>();
+
+  const [code, setCode] = useState<string>("");
+  const [error, setError] = useState("");
 
   const startService = async () => {
     const service = await esbuild.startService({
@@ -15,34 +19,34 @@ export const useESBuild = () => {
     return service;
   };
 
-  const bundle = useCallback(async (code: string) => {
-    if (!esbuildRef.current) {
-      return;
-    }
+  const bundle = useMemo(
+    () =>
+      debounce(async (code: string) => {
+        if (!esbuildRef.current) {
+          return;
+        }
 
-    try {
-      const content = await esbuildRef.current.build({
-        entryPoints: ["index.js"],
-        bundle: true,
-        write: false,
-        plugins: [unpkgPathPlugin(), fetchPlugin(code)],
-        define: {
-          "process.env.NODE_ENV": "'production'",
-          global: "window",
-        },
-      });
+        try {
+          const output = await esbuildRef.current.build({
+            entryPoints: ["index.js"],
+            bundle: true,
+            write: false,
+            plugins: [unpkgPathPlugin(), fetchPlugin(code)],
+            define: {
+              "process.env.NODE_ENV": "'production'",
+              global: "window",
+            },
+          });
 
-      return {
-        code: content.outputFiles[0].text,
-        error: "",
-      };
-    } catch (error) {
-      return {
-        code: "",
-        error: (error as any).message,
-      };
-    }
-  }, []);
+          setCode(output.outputFiles[0].text);
+          setError("");
+        } catch (error) {
+          setCode("");
+          setError((error as any).message as string);
+        }
+      }, 1000),
+    []
+  );
 
   useEffect(() => {
     startService().then((service) => {
@@ -50,5 +54,9 @@ export const useESBuild = () => {
     });
   }, []);
 
-  return { bundle };
+  useEffect(() => {
+    bundle(content);
+  }, [bundle, content]);
+
+  return { code, error };
 };
