@@ -12,10 +12,10 @@ import { useTypedSelector } from "../../hooks/useTypedSelector";
 type Props = { id: string };
 
 const CodeCell: React.FC<Props> = ({ id }) => {
-  const { content } = useTypedSelector((state) => state.cells.data[id]);
-
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
+
+  const { content } = useTypedSelector((state) => state.cells.data[id]);
 
   const { updateCell } = useAction();
 

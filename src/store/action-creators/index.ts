@@ -40,7 +40,7 @@ export const updateCell = (
 });
 
 export const insertBeforeCell = (
-  id: Cell["id"],
+  id: string | null,
   type: CellType
 ): InsertCellBeforeAction => ({
   type: ActionType.INSERT_CELL_BEFORE,
