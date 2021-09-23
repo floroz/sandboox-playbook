@@ -68,11 +68,10 @@ const CodeEditor = ({
 
   return (
     <div className="editor-wrapper">
-      {isBundling && (
-        <span className="icon spinner">
-          <i className="fas fa-spinner"></i>
-        </span>
-      )}
+      <span className={`icon spinner ${isBundling && "show"}`}>
+        <i className="fas fa-spinner"></i>
+      </span>
+
       <button
         className="button button-format is-primary is-small"
         onClick={onFormatClick}
