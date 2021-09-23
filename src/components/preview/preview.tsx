@@ -18,7 +18,11 @@ const Preview = ({ code, error }: Props) => {
   useEffect(() => {
     if (!iframeRef.current) return;
 
-    iframeRef.current.contentWindow!.postMessage(code, "*");
+    iframeRef.current.srcdoc = html;
+
+    setTimeout(() => {
+      iframeRef.current!.contentWindow!.postMessage(code, "*");
+    }, 100);
   }, [code]);
 
   return (

@@ -21,6 +21,8 @@ const CodeCell: React.FC<Props> = ({ id }) => {
     updateCell(id, userInput);
   };
 
+  console.log(code);
+
   return (
     <Resizable axis="y">
       <div className="code-cell">
