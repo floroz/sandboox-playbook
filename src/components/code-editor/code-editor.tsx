@@ -11,9 +11,14 @@ import Highlighter from "monaco-jsx-highlighter";
 type CodeEditorProps = {
   initialValue?: string;
   onChange: (value: string) => void;
+  isBundling: boolean;
 };
 
-const CodeEditor = ({ initialValue, onChange }: CodeEditorProps) => {
+const CodeEditor = ({
+  initialValue,
+  onChange,
+  isBundling,
+}: CodeEditorProps) => {
   const codeEditorRef = useRef<editor.IStandaloneCodeEditor>();
 
   const onEditorDidMount: EditorDidMount = (getEditorValue, monacoEditor) => {
@@ -63,6 +68,11 @@ const CodeEditor = ({ initialValue, onChange }: CodeEditorProps) => {
 
   return (
     <div className="editor-wrapper">
+      {isBundling && (
+        <span className="icon spinner">
+          <i className="fas fa-spinner"></i>
+        </span>
+      )}
       <button
         className="button button-format is-primary is-small"
         onClick={onFormatClick}

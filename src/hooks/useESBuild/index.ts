@@ -9,15 +9,7 @@ export const useESBuild = (content: string) => {
 
   const [code, setCode] = useState<string>("");
   const [error, setError] = useState("");
-
-  const startService = async () => {
-    const service = await esbuild.startService({
-      worker: true,
-      wasmURL: "https://unpkg.com/esbuild-wasm@0.8.27/esbuild.wasm",
-    });
-
-    return service;
-  };
+  const [loading, setLoading] = useState(false);
 
   const bundle = useMemo(
     () =>
@@ -26,6 +18,7 @@ export const useESBuild = (content: string) => {
           return;
         }
 
+        setLoading(true);
         try {
           const output = await esbuildRef.current.build({
             entryPoints: ["index.js"],
@@ -43,20 +36,45 @@ export const useESBuild = (content: string) => {
         } catch (error) {
           setCode("");
           setError((error as any).message as string);
+        } finally {
+          setLoading(false);
         }
       }, 1000),
     []
   );
 
+  /**
+   * Start and stop the ESBuild service
+   */
   useEffect(() => {
+    const startService = async () => {
+      setLoading(true);
+      const service = await esbuild.startService({
+        worker: true,
+        wasmURL: "https://unpkg.com/esbuild-wasm@0.8.27/esbuild.wasm",
+      });
+
+      setLoading(false);
+
+      return service;
+    };
+
     startService().then((service) => {
       esbuildRef.current = service;
     });
+
+    return () => {
+      esbuildRef.current?.stop();
+      esbuildRef.current = undefined;
+    };
   }, []);
 
+  /**
+   * Run ESBuild bundler on content changes
+   */
   useEffect(() => {
     bundle(content);
   }, [bundle, content]);
 
-  return { code, error };
+  return { code, error, loading };
 };

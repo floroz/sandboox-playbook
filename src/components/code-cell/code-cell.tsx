@@ -13,7 +13,7 @@ type Props = { id: string };
 const CodeCell: React.FC<Props> = ({ id }) => {
   const { content } = useTypedSelector((state) => state.cells.data[id]);
 
-  const { code, error } = useESBuild(content);
+  const { code, error, loading: isBundling } = useESBuild(content);
 
   const { updateCell } = useAction();
 
@@ -25,7 +25,11 @@ const CodeCell: React.FC<Props> = ({ id }) => {
     <Resizable axis="y">
       <div className="code-cell">
         <Resizable axis="x">
-          <CodeEditor onChange={onEditorChange} initialValue={content} />
+          <CodeEditor
+            onChange={onEditorChange}
+            initialValue={content}
+            isBundling={isBundling}
+          />
         </Resizable>
         <Preview code={code} error={error} />
       </div>
