@@ -2,17 +2,18 @@ import MDEditor from "@uiw/react-md-editor";
 import React, { useEffect, useRef, useState } from "react";
 import { useAction } from "../../hooks/useAction";
 import { useTypedSelector } from "../../hooks/useTypedSelector";
+import { Cell } from "../../store/cell";
 import "./text-editor.css";
 
 interface Props {
-  id: string;
+  cell: Cell;
 }
 
-const TextEditor = ({ id }: Props) => {
+const TextEditor = ({ cell }: Props) => {
   const [editing, setEditing] = useState(false);
   const MDEditorRef = useRef<HTMLDivElement>(null);
 
-  const { content } = useTypedSelector((state) => state.cells.data[id]);
+  const { content } = useTypedSelector((state) => state.cells.data[cell.id]);
 
   const onPreviewClick = (e: React.MouseEvent<HTMLDivElement>) => {
     setEditing(true);
@@ -39,7 +40,7 @@ const TextEditor = ({ id }: Props) => {
   }, []);
 
   const onEditorChange = (event: string | undefined) => {
-    updateCell(id, event ?? "");
+    updateCell(cell.id, event ?? "");
   };
 
   if (editing) {

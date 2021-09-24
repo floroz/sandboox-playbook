@@ -6,7 +6,6 @@ import { v4 as uuidv4 } from "uuid";
 
 const defaultMarkdownContent = `# Header \n Hello World!`;
 
-const initialCodeSnipper = `const a = 1;`;
 export interface CellState {
   data: {
     [key: Cell["id"]]: Cell;
@@ -83,7 +82,7 @@ const insertCellAfter = (
 ) => {
   const cell: Cell = {
     type,
-    content: type === "text" ? defaultMarkdownContent : initialCodeSnipper,
+    content: type === "text" ? defaultMarkdownContent : "",
     id: uuidv4(),
   };
 

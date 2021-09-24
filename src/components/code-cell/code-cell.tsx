@@ -1,27 +1,61 @@
-import React from "react";
+import React, { useEffect } from "react";
 import CodeEditor from "../code-editor/code-editor";
 import "bulmaswatch/superhero/bulmaswatch.min.css";
 import Preview from "../preview/preview";
-import { useBundle } from "../../hooks/useBundle";
 import Resizable from "../resizable/resizable";
 import "./code-cell.css";
 import { useAction } from "../../hooks/useAction";
 import { useTypedSelector } from "../../hooks/useTypedSelector";
+import { Cell } from "../../store/cell";
 
-type Props = { id: string };
+type Props = { cell: Cell };
 
-const CodeCell: React.FC<Props> = ({ id }) => {
-  const { content } = useTypedSelector((state) => state.cells.data[id]);
+const CodeCell: React.FC<Props> = ({ cell }) => {
+  const { updateCell, createBundle } = useAction();
 
-  const { code, error, isBundling } = useBundle(content);
+  const bundle = useTypedSelector((state) => state.bundles[cell.id]);
 
-  const { updateCell } = useAction();
+  const cumulativeCode = useTypedSelector((state) => {
+    const { data, order } = state.cells;
+    const orderedCells = order.map((id) => data[id]);
+
+    const cumulativeCode = [
+      `
+        const show = (value) => {
+          document.querySelector('#root').innerHTML = value;
+        };
+      `,
+    ];
+    for (let c of orderedCells) {
+      if (c.type === "code") {
+        cumulativeCode.push(c.content);
+      }
+      if (c.id === cell.id) {
+        break;
+      }
+    }
+    return cumulativeCode;
+  });
+
+  useEffect(() => {
+    if (!bundle) {
+      createBundle(cell.id, cumulativeCode.join("\n"));
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      createBundle(cell.id, cumulativeCode.join("\n"));
+    }, 750);
+
+    return () => {
+      clearTimeout(timer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cumulativeCode.join("\n"), cell.id, createBundle]);
 
   const onEditorChange = (userInput: string) => {
-    updateCell(id, userInput);
+    updateCell(cell.id, userInput);
   };
-
-  console.log(code);
 
   return (
     <Resizable axis="y">
@@ -29,11 +63,11 @@ const CodeCell: React.FC<Props> = ({ id }) => {
         <Resizable axis="x">
           <CodeEditor
             onChange={onEditorChange}
-            initialValue={content}
-            isBundling={isBundling}
+            isBundling={!!bundle?.loading}
+            initialValue={cell.content}
           />
         </Resizable>
-        <Preview code={code} error={error} />
+        <Preview code={bundle?.code ?? ""} error={bundle?.err ?? ""} />
       </div>
     </Resizable>
   );
