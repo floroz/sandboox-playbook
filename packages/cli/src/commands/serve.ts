@@ -2,6 +2,10 @@ import { Command } from "commander";
 import { serve } from "local-api";
 import path from "path";
 
+const isProd = process.env.NODE_ENV === "production";
+
+console.log(isProd);
+
 export const serveCommand = new Command()
   .command("serve [filename]")
   .description("Open a file for editing")
@@ -10,7 +14,10 @@ export const serveCommand = new Command()
     try {
       const filename = path.basename(file);
       const dir = path.join(process.cwd(), path.dirname(file));
-      await serve(parseInt(port), filename, dir);
+
+      await serve(parseInt(port), filename, dir, !isProd);
+
+      console.log(`Opened ${filename}. Navigate to http://localhost:${port}`);
     } catch (err) {
       if ((err as any).code === "EADDRINUSE") {
         console.error("Port is in use. Try running on a different port.");

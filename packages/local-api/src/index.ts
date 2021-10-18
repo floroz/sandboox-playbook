@@ -1,28 +1,42 @@
 import express from "express";
-import http from "http-proxy-middleware";
+import { createProxyMiddleware } from "http-proxy-middleware";
 import path from "path";
 import fs from "fs";
 
-const app = express();
+export const serve = (
+  port: number,
+  filename: string,
+  dir: string,
+  useProxy: boolean
+) => {
+  const app = express();
 
-app.use(express.static("/public"));
+  if (useProxy) {
+    app.use(
+      "/",
+      createProxyMiddleware({
+        target: "http://localhost:3000",
+        ws: true,
+        logLevel: "silent",
+      })
+    );
+  } else {
+    const localClientPath = path.join(
+      require.resolve("local-client/build/index.html")
+    );
+    app.use(express.static(path.dirname(localClientPath)));
+  }
 
-app.get("/", (req, res) => {
-  console.log("get on /");
-  res.send("/");
-});
+  app.get("/cells", (req, res) => {
+    console.log("get on /cells");
+    res.send("/cells");
+  });
 
-app.get("/cells", (req, res) => {
-  console.log("get on /cells");
-  res.send("/cells");
-});
+  app.post("/cells", (req, res) => {
+    console.log("post on /cells");
+    res.send("/cells");
+  });
 
-app.post("/cells", (req, res) => {
-  console.log("post on /cells");
-  res.send("/cells");
-});
-
-export const serve = (port: number, filename: string, dir: string) => {
   return new Promise<void>((resolve, reject) => {
     app
       .listen(port, () => {
