@@ -3,23 +3,16 @@ import CellListItem from "../cell-list-item/cell-list-item";
 import AddCell from "../add-cell/add-cell";
 import React, { useEffect } from "react";
 import "./cell-list.css";
-import { useTypedSelector } from "../../hooks/useTypedSelector";
 import { useAction } from "../../hooks/useAction";
 
 interface Props {}
 
 const CellList = (props: Props) => {
-  const { fetchCells, saveCells } = useAction();
+  const { fetchCells } = useAction();
 
   useEffect(() => {
     fetchCells();
-  }, []);
-
-  const { data, order } = useTypedSelector((state) => state.cells);
-
-  useEffect(() => {
-    saveCells();
-  }, [data, order]);
+  }, [fetchCells]);
 
   const cells = useOrderedCells();
 
