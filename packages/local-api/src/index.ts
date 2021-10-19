@@ -1,7 +1,8 @@
 import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import path from "path";
-import fs from "fs";
+
+import cellsRouter from "./routes/cells";
 
 export const serve = (
   port: number,
@@ -10,6 +11,9 @@ export const serve = (
   useProxy: boolean
 ) => {
   const app = express();
+
+  app.use(express.json());
+  app.use("/cells", cellsRouter(filename, dir));
 
   if (useProxy) {
     app.use(
@@ -26,16 +30,6 @@ export const serve = (
     );
     app.use(express.static(path.dirname(localClientPath)));
   }
-
-  app.get("/cells", (req, res) => {
-    console.log("get on /cells");
-    res.send("/cells");
-  });
-
-  app.post("/cells", (req, res) => {
-    console.log("post on /cells");
-    res.send("/cells");
-  });
 
   return new Promise<void>((resolve, reject) => {
     app

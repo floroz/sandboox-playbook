@@ -4,8 +4,6 @@ import path from "path";
 
 const isProd = process.env.NODE_ENV === "production";
 
-console.log(isProd);
-
 export const serveCommand = new Command()
   .command("serve [filename]")
   .description("Open a file for editing")

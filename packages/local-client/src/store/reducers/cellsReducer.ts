@@ -110,6 +110,26 @@ export const cellsReducer = produce(
         return insertCellAfter(action.payload.id, action.payload.type, state);
       case ActionType.UPDATE_CELL:
         return updateCell(action.payload.id, action.payload.content, state);
+      case ActionType.FETCH_CELLS_START:
+        state.loading = true;
+        state.error = null;
+        return state;
+      case ActionType.FETCH_CELLS_SUCCESS:
+        state.loading = false;
+        state.data = action.payload.data;
+        state.order = action.payload.order;
+        state.error = null;
+        return state;
+      case ActionType.FETCH_CELLS_ERROR:
+        state.loading = false;
+        state.error = action.payload.error;
+        return state;
+      case ActionType.SAVE_CELLS:
+        state.error = null;
+        return state;
+      case ActionType.SAVE_CELLS_ERROR:
+        state.error = action.payload.error;
+        return state;
       default:
         return state;
     }
