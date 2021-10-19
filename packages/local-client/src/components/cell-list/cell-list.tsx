@@ -1,12 +1,19 @@
 import { useOrderedCells } from "../../hooks/useOrderedCells";
 import CellListItem from "../cell-list-item/cell-list-item";
 import AddCell from "../add-cell/add-cell";
-import React from "react";
+import React, { useEffect } from "react";
 import "./cell-list.css";
+import { useAction } from "../../hooks/useAction";
 
 interface Props {}
 
 const CellList = (props: Props) => {
+  const { fetchCells } = useAction();
+
+  useEffect(() => {
+    fetchCells();
+  }, [fetchCells]);
+
   const cells = useOrderedCells();
 
   const renderedCells = cells.map((cell) => (

@@ -50,10 +50,37 @@ export interface BundleCompleteAction {
   };
 }
 
+export interface FetchCellsAction {
+  type: ActionType.FETCH_CELLS_START;
+}
+export interface FetchCellsErrorAction {
+  type: ActionType.FETCH_CELLS_ERROR;
+  payload: { error: string };
+}
+export interface FetchCellsSuccessAction {
+  type: ActionType.FETCH_CELLS_SUCCESS;
+  payload: { data: { [key: Cell["id"]]: Cell }; order: Cell["id"][] };
+}
+
+export interface SaveCellsAction {
+  type: ActionType.SAVE_CELLS;
+}
+export interface SaveCellsErrorAction {
+  type: ActionType.SAVE_CELLS_ERROR;
+  payload: {
+    error: string;
+  };
+}
+
 export type Action =
   | MoveCellAction
   | DeleteCellAction
   | InsertCellAfterAction
   | UpdateCellAction
   | BundleStartAction
-  | BundleCompleteAction;
+  | BundleCompleteAction
+  | FetchCellsAction
+  | FetchCellsSuccessAction
+  | FetchCellsErrorAction
+  | SaveCellsAction
+  | SaveCellsErrorAction;
