@@ -26,7 +26,7 @@ export const serve = (
     );
   } else {
     const localClientPath = path.join(
-      require.resolve("local-client/build/index.html")
+      require.resolve("@floroz-sandbox/local-client/build/index.html")
     );
     app.use(express.static(path.dirname(localClientPath)));
   }

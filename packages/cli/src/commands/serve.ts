@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { serve } from "local-api";
+import { serve } from "@floroz-sandbox/local-api";
 import path from "path";
 
 const isProd = process.env.NODE_ENV === "production";
